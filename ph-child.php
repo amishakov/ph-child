@@ -5,7 +5,7 @@
  * Description: Collect note-style feedback from your client’s websites and sync them with your SureFeedback parent project.
  * Author: Brainstorm Force
  * Author URI: https://www.brainstormforce.com
- * Version: 1.2.12
+ * Version: 1.2.13
  *
  * Requires at least: 4.7
  * Tested up to: 7.0
@@ -66,6 +66,17 @@ if ( ! class_exists( 'PH_Child' ) ) :
 		protected $whitelist_option_names = array();
 
 		/**
+		 * Connection options that hold secrets and must never be readable
+		 * by non-administrators over XML-RPC.
+		 *
+		 * @var array
+		 */
+		protected $sensitive_option_names = array(
+			'ph_child_access_token',
+			'ph_child_signature',
+		);
+
+		/**
 		 * Get things going
 		 */
 		public function __construct() {
@@ -120,6 +131,11 @@ if ( ! class_exists( 'PH_Child' ) ) :
 
 			// whitelist our blog options.
 			add_filter( 'xmlrpc_blog_options', array( $this, 'whitelist_option' ) );
+
+			// prevent the connection secrets from leaking to non-admins over XML-RPC (wp.getOptions).
+			foreach ( $this->sensitive_option_names as $sensitive_option ) {
+				add_filter( 'option_' . $sensitive_option, array( $this, 'protect_sensitive_option_on_xmlrpc' ) );
+			}
 
 			// maybe disconnect from parent site.
 			add_action( 'admin_init', array( $this, 'maybe_disconnect' ) );
@@ -378,6 +394,34 @@ if ( ! class_exists( 'PH_Child' ) ) :
 			}
 
 			return $options;
+		}
+
+		/**
+		 * Mask sensitive connection secrets during XML-RPC reads.
+		 *
+		 * WordPress core's wp.getOptions method returns option values to any
+		 * authenticated user regardless of capability - the readonly flag only
+		 * gates writes, not reads. Because the plugin whitelists its connection
+		 * options so the parent site can configure them via wp.setOptions, the
+		 * access token and signature would otherwise be readable by any logged-in
+		 * user, including Subscribers. This masks those values on read while an
+		 * XML-RPC request is being served by a user who cannot manage options.
+		 *
+		 * The admin-authenticated connection handshake (parent site), the
+		 * front-end script loader and the REST endpoints are unaffected, as they
+		 * either run outside an XML-RPC request or with the manage_options
+		 * capability.
+		 *
+		 * @param mixed $value The stored option value.
+		 *
+		 * @return mixed Empty string when the read must be blocked, original value otherwise.
+		 */
+		public function protect_sensitive_option_on_xmlrpc( $value ) {
+			if ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST && ! current_user_can( 'manage_options' ) ) {
+				return '';
+			}
+
+			return $value;
 		}
 
 		/**

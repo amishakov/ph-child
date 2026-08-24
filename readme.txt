@@ -3,7 +3,7 @@ Contributors: brainstormforce, 2winfactor
 Donate link: https://surefeedback.com
 Tags: project, huddle, child, feedback, design
 Requires at least: 4.7
-Tested up to: 7.0
+Tested up to: 7.1
 Stable tag: 1.2.13
 Requires PHP: 5.6
 License: GPLv2 or later
@@ -49,6 +49,7 @@ The purpose of this plugin is to make it simple to get targeted feedback from cl
 == Changelog ==
 = 1.2.13 =
 * Fix: Prevented the connection access token and signature from being readable by non-administrator users via the XML-RPC wp.getOptions method. Props to Patchstack for privately reporting it to our team. Please make sure you are using the latest version on your website.
+* Improvement: Compatibility to WordPress 7.1
 
 = 1.2.12 =
 * Improvement: Compatibility to WordPress 7.0

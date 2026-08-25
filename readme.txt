@@ -3,8 +3,8 @@ Contributors: brainstormforce, 2winfactor
 Donate link: https://surefeedback.com
 Tags: project, huddle, child, feedback, design
 Requires at least: 4.7
-Tested up to: 7.0
-Stable tag: 1.2.12
+Tested up to: 7.1
+Stable tag: 1.2.13
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -47,7 +47,11 @@ All you need to do is install the plugin on the site you want feedback on and it
 The purpose of this plugin is to make it simple to get targeted feedback from clients on web designs. All you have to do is install the [SureFeedback](https://surefeedback.com) plugin and let your clients select areas of your design to add their own comments. Everything is tracked within the plugin. It's so easy to use!
 
 == Changelog ==
-= 1.2.12 = 
+= 1.2.13 =
+* Fix: Prevented the connection access token and signature from being readable by non-administrator users via the XML-RPC wp.getOptions method. Props to Patchstack for privately reporting it to our team. Please make sure you are using the latest version on your website.
+* Improvement: Compatibility to WordPress 7.1
+
+= 1.2.12 =
 * Improvement: Compatibility to WordPress 7.0
 
 = 1.2.11 = 
